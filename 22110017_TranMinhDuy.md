@@ -155,6 +155,9 @@ x/40x $esp
 
 ![image-23](https://github.com/user-attachments/assets/f26c74aa-7607-4f33-894a-cae56633f12a)
 
+Check the /etc/hosts file to confirm:
+![image](https://github.com/user-attachments/assets/b3c8ae0b-8109-468d-a879-8f2efee9f447)
+
 # Task 2: Attack on the database of Vulnerable App from SQLi lab 
 
 - Start docker container from SQLi. 
